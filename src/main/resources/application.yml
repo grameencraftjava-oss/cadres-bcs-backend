@@ -1,21 +1,13 @@
 spring:
-  application:
-    name: cadres-bcs-compass
-
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/cbc_db?useSSL=false&serverTimezone=Asia/Dhaka
-    username: root
-    password: Raiyan@36031107
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
+    url: ${DB_URL:jdbc:mysql://localhost:3306/cadres_bcs_compass}
+    username: ${DB_USER:root}
+    password: ${DB_PASS:root}
+    driver-className: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
-        format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
-
-server:
-  port: 8080
