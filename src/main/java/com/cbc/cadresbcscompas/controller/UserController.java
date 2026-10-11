@@ -24,37 +24,48 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        if (userRepository.findByEmail(email).isPresent()) {
-            return ResponseEntity.badRequest().body("Error: Email already exists!");
+        try {
+            String email = payload.get("email");
+            if (email == null || email.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Error: Email is required.");
+            }
+            if (userRepository.findByEmail(email).isPresent()) {
+                return ResponseEntity.badRequest().body("Error: Email already exists!");
+            }
+
+            User user = new User();
+            user.setName(payload.get("name"));
+            user.setEmail(email);
+            user.setPhone(payload.get("phone"));
+            user.setPassword(payload.get("password"));
+            user.setRole(Role.STUDENT);
+            
+            userRepository.save(user);
+
+            String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+            return ResponseEntity.ok("Success Token: " + token + " Role: " + user.getRole().name());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("DB_CRASH: " + e.getMessage());
         }
-
-        User user = new User();
-        user.setName(payload.get("name"));
-        user.setEmail(email);
-        user.setPhone(payload.get("phone"));
-        user.setPassword(payload.get("password"));
-        user.setRole(Role.STUDENT);
-        
-        userRepository.save(user);
-
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
-        return ResponseEntity.ok("Success Token: " + token + " Role: " + user.getRole().name());
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
-        String password = payload.get("password");
+        try {
+            String email = payload.get("email");
+            String password = payload.get("password");
 
-        Optional<User> userOpt = userRepository.findByEmail(email);
+            Optional<User> userOpt = userRepository.findByEmail(email);
 
-        if (userOpt.isPresent() && userOpt.get().getPassword().equals(password)) {
-            User user = userOpt.get();
-            String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
-            return ResponseEntity.ok("Success Token: " + token + " Role: " + user.getRole().name());
+            if (userOpt.isPresent() && userOpt.get().getPassword().equals(password)) {
+                User user = userOpt.get();
+                String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+                return ResponseEntity.ok("Success Token: " + token + " Role: " + user.getRole().name());
+            }
+
+            return ResponseEntity.badRequest().body("Error: Invalid email or password");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("DB_CRASH: " + e.getMessage());
         }
-
-        return ResponseEntity.badRequest().body("Error: Invalid email or password");
     }
 }
