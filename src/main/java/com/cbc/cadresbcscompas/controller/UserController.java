@@ -22,13 +22,11 @@ public class UserController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // Manual Registration
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> payload) {
         try {
             String email = payload.get("email");
-            if (email == null || email.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("Error: Email is required.");
-            }
             if (userRepository.findByEmail(email).isPresent()) {
                 return ResponseEntity.badRequest().body("Error: Email already exists!");
             }
@@ -47,6 +45,7 @@ public class UserController {
         }
     }
 
+    // Manual Login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> payload) {
         try {
@@ -65,17 +64,42 @@ public class UserController {
         }
     }
 
-    // SECRET ENDPOINT: Make any user an ADMIN
+    // Google Login (Permanent Save to DB)
+    @PostMapping("/google-login")
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
+        try {
+            String email = payload.get("email");
+            String name = payload.get("name");
+            
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            User user;
+            if (userOpt.isPresent()) {
+                user = userOpt.get(); // Old Google user found in DB
+            } else {
+                user = new User(); // New Google user saved to DB permanently
+                user.setEmail(email);
+                user.setName(name != null ? name : "Google User");
+                user.setPassword("google-oauth-secret"); 
+                user.setRole(Role.STUDENT);
+                userRepository.save(user);
+            }
+            String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+            return ResponseEntity.ok("Success Token: " + token + " Role: " + user.getRole().name());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("DB_CRASH: " + e.getMessage());
+        }
+    }
+
+    // Secret Admin Endpoint
     @GetMapping("/make-admin")
     public ResponseEntity<?> makeAdmin(@RequestParam String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            // Tries to set ADMIN. If your enum is SUPERADMIN, change Role.ADMIN to Role.SUPERADMIN
             user.setRole(Role.ADMIN); 
             userRepository.save(user);
             return ResponseEntity.ok("Success: User " + email + " is now an ADMIN!");
         }
-        return ResponseEntity.badRequest().body("Error: User not found in database!");
+        return ResponseEntity.badRequest().body("Error: User not found!");
     }
 }
