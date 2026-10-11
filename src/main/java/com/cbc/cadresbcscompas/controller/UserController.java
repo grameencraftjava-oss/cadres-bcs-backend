@@ -32,14 +32,12 @@ public class UserController {
             if (userRepository.findByEmail(email).isPresent()) {
                 return ResponseEntity.badRequest().body("Error: Email already exists!");
             }
-
             User user = new User();
             user.setName(payload.get("name"));
             user.setEmail(email);
             user.setPhone(payload.get("phone"));
             user.setPassword(payload.get("password"));
             user.setRole(Role.STUDENT);
-            
             userRepository.save(user);
 
             String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
@@ -56,16 +54,28 @@ public class UserController {
             String password = payload.get("password");
 
             Optional<User> userOpt = userRepository.findByEmail(email);
-
             if (userOpt.isPresent() && userOpt.get().getPassword().equals(password)) {
                 User user = userOpt.get();
                 String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
                 return ResponseEntity.ok("Success Token: " + token + " Role: " + user.getRole().name());
             }
-
             return ResponseEntity.badRequest().body("Error: Invalid email or password");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("DB_CRASH: " + e.getMessage());
         }
+    }
+
+    // SECRET ENDPOINT: Make any user an ADMIN
+    @GetMapping("/make-admin")
+    public ResponseEntity<?> makeAdmin(@RequestParam String email) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            // Tries to set ADMIN. If your enum is SUPERADMIN, change Role.ADMIN to Role.SUPERADMIN
+            user.setRole(Role.ADMIN); 
+            userRepository.save(user);
+            return ResponseEntity.ok("Success: User " + email + " is now an ADMIN!");
+        }
+        return ResponseEntity.badRequest().body("Error: User not found in database!");
     }
 }
