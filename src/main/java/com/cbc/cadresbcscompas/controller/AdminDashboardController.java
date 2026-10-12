@@ -18,10 +18,8 @@ public class AdminDashboardController {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private LoginHistoryRepository historyRepository;
-
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
@@ -29,7 +27,6 @@ public class AdminDashboardController {
     public ResponseEntity<?> getStats() {
         long totalSignups = userRepository.count();
         long activeEnrollments = enrollmentRepository.count();
-        
         Map<String, Long> stats = new HashMap<>();
         stats.put("totalSignups", totalSignups);
         stats.put("totalStudents", totalSignups); 
@@ -54,15 +51,17 @@ public class AdminDashboardController {
         return ResponseEntity.ok(historyRepository.findAll());
     }
 
+    // Student ID (যেমন CBC-123456) দিয়ে সার্চ করার রুট
     @GetMapping("/student-by-id")
-    public ResponseEntity<?> getStudentById(@RequestParam Long id) {
-        Optional<User> userOpt = userRepository.findById(id);
+    public ResponseEntity<?> getStudentById(@RequestParam String id) {
+        Optional<User> userOpt = userRepository.findByStudentId(id);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             Map<String, String> data = new HashMap<>();
             data.put("name", user.getName());
             data.put("email", user.getEmail());
             data.put("phone", user.getPhone() != null ? user.getPhone() : "");
+            data.put("studentId", user.getStudentId());
             return ResponseEntity.ok(data);
         }
         return ResponseEntity.notFound().build();
@@ -94,7 +93,6 @@ public class AdminDashboardController {
             
             enrollment.setPaymentMethod(payload.getOrDefault("paymentMethod", "").toString());
             enrollment.setTrxId(payload.getOrDefault("trxId", "").toString());
-            
             enrollmentRepository.save(enrollment);
             
             return ResponseEntity.ok(Collections.singletonMap("message", "Student enrolled successfully."));
@@ -112,7 +110,6 @@ public class AdminDashboardController {
     public ResponseEntity<?> assignRole(@RequestBody Map<String, String> payload) {
         String email = payload.get("adminEmail");
         String roleStr = payload.get("role");
-        
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
