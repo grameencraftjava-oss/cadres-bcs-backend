@@ -12,6 +12,7 @@ public class Enrollment {
 
     private String studentEmail;
     private String studentName;
+    private String studentPhone; // Notun field add kora holo
     private String courseId;
     private String courseTitle;
     private String instructorName;
@@ -24,13 +25,14 @@ public class Enrollment {
         this.enrollmentDate = LocalDateTime.now();
     }
 
-    // Getters and Setters
     public Long getEnrollmentId() { return enrollmentId; }
     public void setEnrollmentId(Long enrollmentId) { this.enrollmentId = enrollmentId; }
     public String getStudentEmail() { return studentEmail; }
     public void setStudentEmail(String studentEmail) { this.studentEmail = studentEmail; }
     public String getStudentName() { return studentName; }
     public void setStudentName(String studentName) { this.studentName = studentName; }
+    public String getStudentPhone() { return studentPhone; }
+    public void setStudentPhone(String studentPhone) { this.studentPhone = studentPhone; }
     public String getCourseId() { return courseId; }
     public void setCourseId(String courseId) { this.courseId = courseId; }
     public String getCourseTitle() { return courseTitle; }
