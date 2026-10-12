@@ -71,10 +71,18 @@ public class AdminDashboardController {
     @PostMapping("/enroll")
     public ResponseEntity<?> manualEnroll(@RequestBody Map<String, Object> payload) {
         try {
+            String email = payload.getOrDefault("studentEmail", "").toString();
+            String courseId = payload.getOrDefault("courseId", "47-preliminary").toString();
+
+            // ডুপ্লিকেট চেক: যদি স্টুডেন্ট আগে থেকেই কোর্সে থাকে, তবে এরর দেবে
+            if (enrollmentRepository.existsByStudentEmailAndCourseId(email, courseId)) {
+                return ResponseEntity.badRequest().body(Collections.singletonMap("error", "এই স্টুডেন্ট ইতিমধ্যে এই কোর্সে ভর্তি আছে!"));
+            }
+
             Enrollment enrollment = new Enrollment();
-            enrollment.setStudentEmail(payload.getOrDefault("studentEmail", "").toString());
+            enrollment.setStudentEmail(email);
             enrollment.setStudentName(payload.getOrDefault("studentName", "").toString());
-            enrollment.setCourseId(payload.getOrDefault("courseId", "47-preliminary").toString());
+            enrollment.setCourseId(courseId);
             enrollment.setCourseTitle("47th BCS Preliminary");
             enrollment.setInstructorName("Mentors Panel");
             

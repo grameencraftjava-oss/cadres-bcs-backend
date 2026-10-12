@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
-    // ইউজারের ইমেইল দিয়ে তার সব কেনা কোর্স খুঁজে বের করার কাস্টম মেথড
     List<Enrollment> findByStudentEmail(String studentEmail);
+    // একই কোর্সে স্টুডেন্ট আগে থেকে আছে কি না তা চেক করার কাস্টম মেথড
+    boolean existsByStudentEmailAndCourseId(String studentEmail, String courseId);
 }
