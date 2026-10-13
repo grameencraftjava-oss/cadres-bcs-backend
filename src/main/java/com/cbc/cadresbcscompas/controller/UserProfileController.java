@@ -21,7 +21,12 @@ public class UserProfileController {
     public ResponseEntity<?> getProfile(@PathVariable String email) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if(userOpt.isPresent()){
-            return ResponseEntity.ok(userOpt.get());
+            User user = userOpt.get();
+            if (user.getStudentId() == null || user.getStudentId().isEmpty()) {
+                user.setStudentId("CBC-" + (int)(Math.random() * 900000 + 100000));
+                userRepository.save(user);
+            }
+            return ResponseEntity.ok(user);
         }
         return ResponseEntity.notFound().build();
     }
