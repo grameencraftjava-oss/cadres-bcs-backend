@@ -5,25 +5,22 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Enrollment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long enrollmentId;
-
     private String studentEmail;
     private String studentName;
-    private String studentPhone; // Notun field add kora holo
+    private String studentPhone;
     private String courseId;
     private String courseTitle;
     private String instructorName;
     private Double amountPaid;
     private String paymentMethod;
     private String trxId;
-    private LocalDateTime enrollmentDate;
-
-    public Enrollment() {
-        this.enrollmentDate = LocalDateTime.now();
-    }
+    private LocalDateTime enrollmentDate = LocalDateTime.now();
+    
+    // ম্যানুয়াল এনরোলমেন্টের ক্ষেত্রে অ্যাডমিনের তথ্য
+    private String enrolledByAdminEmail;
+    private String enrolledByAdminName;
 
     public Long getEnrollmentId() { return enrollmentId; }
     public void setEnrollmentId(Long enrollmentId) { this.enrollmentId = enrollmentId; }
@@ -47,4 +44,8 @@ public class Enrollment {
     public void setTrxId(String trxId) { this.trxId = trxId; }
     public LocalDateTime getEnrollmentDate() { return enrollmentDate; }
     public void setEnrollmentDate(LocalDateTime enrollmentDate) { this.enrollmentDate = enrollmentDate; }
+    public String getEnrolledByAdminEmail() { return enrolledByAdminEmail; }
+    public void setEnrolledByAdminEmail(String enrolledByAdminEmail) { this.enrolledByAdminEmail = enrolledByAdminEmail; }
+    public String getEnrolledByAdminName() { return enrolledByAdminName; }
+    public void setEnrolledByAdminName(String enrolledByAdminName) { this.enrolledByAdminName = enrolledByAdminName; }
 }

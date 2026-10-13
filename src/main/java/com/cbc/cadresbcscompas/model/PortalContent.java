@@ -5,13 +5,17 @@ import java.time.LocalDateTime;
 
 @Entity
 public class PortalContent {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String category; // "SUGGESTION" or "YOUTUBE_CLASS"
-    private String subject;
-    private String topic;
+    private String category; // "SUGGESTION", "YOUTUBE_CLASS", "COURSE_MATERIAL"
+    private String courseId; // কোন কোর্সের উপাদান
+    
+    private boolean isFolder = false; // এটি কি ফোল্ডার নাকি কনটেন্ট?
+    private Long parentFolderId; // ফোল্ডারের ভেতর ফোল্ডার সাপোর্ট করার জন্য
+
+    private String subject; // ফোল্ডারের নাম বা বিষয়
+    private String topic; // টপিকের নাম
     
     @Column(columnDefinition = "TEXT")
     private String contentText;
@@ -28,6 +32,12 @@ public class PortalContent {
     public void setId(Long id) { this.id = id; }
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+    public String getCourseId() { return courseId; }
+    public void setCourseId(String courseId) { this.courseId = courseId; }
+    public boolean isFolder() { return isFolder; }
+    public void setFolder(boolean folder) { isFolder = folder; }
+    public Long getParentFolderId() { return parentFolderId; }
+    public void setParentFolderId(Long parentFolderId) { this.parentFolderId = parentFolderId; }
     public String getSubject() { return subject; }
     public void setSubject(String subject) { this.subject = subject; }
     public String getTopic() { return topic; }

@@ -4,11 +4,8 @@ import jakarta.persistence.*;
 
 @Entity
 public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
     
     @Column(unique = true)
@@ -21,17 +18,18 @@ public class User {
 
     @Column(unique = true)
     private String studentId;
-    
     private String university;
     private String studentStatus;
     private String statusYear;
 
     @Column(columnDefinition = "LONGTEXT")
-    private String photoUrl; // স্থায়ীভাবে প্রোফাইল ছবি সেভ রাখার কলাম
+    private String photoUrl;
+
+    private boolean isBanned = false; // স্টুডেন্ট ব্যান করার জন্য
 
     @PrePersist
     public void generateStudentId() {
-        if (this.studentId == null) {
+        if (this.studentId == null && this.role == Role.STUDENT) {
             this.studentId = "CBC-" + (int)(Math.random() * 900000 + 100000); 
         }
     }
@@ -58,4 +56,6 @@ public class User {
     public void setStatusYear(String statusYear) { this.statusYear = statusYear; }
     public String getPhotoUrl() { return photoUrl; }
     public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+    public boolean isBanned() { return isBanned; }
+    public void setBanned(boolean banned) { isBanned = banned; }
 }
