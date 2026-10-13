@@ -19,15 +19,16 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // --- Student Profile Fields ---
     @Column(unique = true)
-    private String studentId; // অটো-জেনারেটেড আইডি
+    private String studentId;
     
     private String university;
-    private String studentStatus; // "PASSED" or "RUNNING"
-    private String statusYear; // "2023" or "3rd Year" etc.
+    private String studentStatus;
+    private String statusYear;
 
-    // এই ফাংশনটি নতুন একাউন্ট খোলার সময় অটোমেটিক CBC- আইডি বসিয়ে দেবে
+    @Column(columnDefinition = "LONGTEXT")
+    private String photoUrl; // স্থায়ীভাবে প্রোফাইল ছবি সেভ রাখার কলাম
+
     @PrePersist
     public void generateStudentId() {
         if (this.studentId == null) {
@@ -47,7 +48,6 @@ public class User {
     public void setPhone(String phone) { this.phone = phone; }
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
-    
     public String getStudentId() { return studentId; }
     public void setStudentId(String studentId) { this.studentId = studentId; }
     public String getUniversity() { return university; }
@@ -56,4 +56,6 @@ public class User {
     public void setStudentStatus(String studentStatus) { this.studentStatus = studentStatus; }
     public String getStatusYear() { return statusYear; }
     public void setStatusYear(String statusYear) { this.statusYear = statusYear; }
+    public String getPhotoUrl() { return photoUrl; }
+    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
 }

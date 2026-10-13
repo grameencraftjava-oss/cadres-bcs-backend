@@ -42,6 +42,7 @@ public class UserProfileController {
             if(payload.containsKey("university")) user.setUniversity(payload.get("university"));
             if(payload.containsKey("studentStatus")) user.setStudentStatus(payload.get("studentStatus"));
             if(payload.containsKey("statusYear")) user.setStatusYear(payload.get("statusYear"));
+            if(payload.containsKey("photoUrl")) user.setPhotoUrl(payload.get("photoUrl"));
             
             userRepository.save(user);
             return ResponseEntity.ok(user);
